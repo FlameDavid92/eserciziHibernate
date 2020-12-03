@@ -35,4 +35,11 @@ public class Prodotto {
     public List<Vendita> getVendite() {
         return vendite;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    public void setPrezzo(BigDecimal prezzo) {
+        this.prezzo = prezzo;
+    }
 }

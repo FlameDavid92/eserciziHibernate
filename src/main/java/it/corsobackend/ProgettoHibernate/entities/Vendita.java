@@ -25,4 +25,12 @@ public class Vendita {
     public Prodotto getProdotto() {
         return prodotto;
     }
+
+    public void setProdotto(Prodotto prodotto) {
+        this.prodotto = prodotto;
+    }
+
+    public void setQuantita(Integer quantita) {
+        this.quantita = quantita;
+    }
 }
