@@ -45,8 +45,13 @@ public class UserService {
             String cryptPass = securityService.computeHash(salt+userModel.getPassword()+salt);
             if(cryptPass.equals(userDB.getPassword())) {
                 String cookieValue = UUID.randomUUID().toString();
-                CookieDB nuovoCookieDB = new CookieDB(cookieValue,userDB);
-                userDB.setCookie(nuovoCookieDB);
+                if (userDB.getCookie() == null) {
+                    CookieDB nuovoCookieDAO = new CookieDB(cookieValue, userDB);
+                    userDB.setCookie(nuovoCookieDAO);
+                }else{
+                    //userDAO.getCookie().setCookie(cookieValue); /*ritorna un nuovo cookie*/
+                    return userDB.getCookie().getCookie(); /*ritorna vecchio cookie*/
+                }
                 ur.save(userDB);
                 return cookieValue;
             } else {
