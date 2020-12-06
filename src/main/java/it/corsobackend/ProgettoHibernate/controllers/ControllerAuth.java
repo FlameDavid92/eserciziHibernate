@@ -2,6 +2,7 @@ package it.corsobackend.ProgettoHibernate.controllers;
 
 import it.corsobackend.ProgettoHibernate.repositories.CookieRepository;
 import it.corsobackend.ProgettoHibernate.repositories.UserRepository;
+import it.corsobackend.ProgettoHibernate.services.SecurityService;
 import it.corsobackend.ProgettoHibernate.services.UserService;
 import it.corsobackend.ProgettoHibernate.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 public class ControllerAuth {
     @Autowired private UserRepository ur;
     @Autowired private CookieRepository cr;
-    @Autowired private UserService us;
 
     @PostMapping("/registrazione")
-    ResponseEntity<String> registrazione (@RequestBody UserView userview){
-        if(us.registration(userview)){
+    ResponseEntity<String> registrazione (@RequestBody UserView userview,
+                                          @Autowired UserService us,
+                                          @Autowired SecurityService securityService){
+        if(us.registration(userview, ur, securityService)){
             return new ResponseEntity<>("Registrazione avvenuta con successo!", new HttpHeaders(), HttpStatus.OK);
         }else{
             return new ResponseEntity<>("Registrazione fallita: username già presente.", new HttpHeaders(), HttpStatus.BAD_REQUEST);
@@ -29,8 +31,11 @@ public class ControllerAuth {
     }
 
     @PostMapping("/login")
-    ResponseEntity<String> login(@RequestBody UserView userview, HttpServletResponse response){
-        String cookieValue = us.login(userview);
+    ResponseEntity<String> login(@RequestBody UserView userview,
+                                 HttpServletResponse response,
+                                 @Autowired UserService us,
+                                 @Autowired SecurityService securityService){
+        String cookieValue = us.login(userview, ur, securityService);
         if(cookieValue != null){
             Cookie auth = new Cookie("auth", cookieValue);
             response.addCookie(auth);
@@ -41,10 +46,11 @@ public class ControllerAuth {
     }
 
     @DeleteMapping("/logout")
-    ResponseEntity<String> logout(@CookieValue(value = "auth", defaultValue = "") String auth){
+    ResponseEntity<String> logout(@CookieValue(value = "auth", defaultValue = "") String auth,
+                                  @Autowired UserService us){
         if(auth.equals("")) return new ResponseEntity<>("",new HttpHeaders(), HttpStatus.BAD_REQUEST);
         else{
-            if(us.logout(auth)) return new ResponseEntity<>("Logout effettuato.",new HttpHeaders(), HttpStatus.OK);
+            if(us.logout(auth, cr)) return new ResponseEntity<>("Logout effettuato.",new HttpHeaders(), HttpStatus.OK);
             else return new ResponseEntity<>("",new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }

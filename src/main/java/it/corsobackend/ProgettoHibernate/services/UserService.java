@@ -2,9 +2,9 @@ package it.corsobackend.ProgettoHibernate.services;
 
 import it.corsobackend.ProgettoHibernate.entities.CookieDB;
 import it.corsobackend.ProgettoHibernate.entities.UserDB;
+import it.corsobackend.ProgettoHibernate.models.UserModel;
 import it.corsobackend.ProgettoHibernate.repositories.CookieRepository;
 import it.corsobackend.ProgettoHibernate.repositories.UserRepository;
-import it.corsobackend.ProgettoHibernate.models.UserModel;
 import it.corsobackend.ProgettoHibernate.views.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,12 +17,8 @@ import java.util.UUID;
 
 @Service
 public class UserService {
-    @Autowired private UserRepository ur;
-    @Autowired private CookieRepository cr;
 
-    @Autowired SecurityService securityService;
-
-    public boolean registration(UserView userview){
+    public boolean registration(UserView userview, UserRepository ur, SecurityService securityService){
         UserModel userModel = new UserModel(userview.getUsername(), userview.getPassword(), userview.getTelefono());
         try{
             Integer salt = new Random().nextInt(50);
@@ -36,7 +32,7 @@ public class UserService {
         }
     }
 
-    public String login(UserView userview){
+    public String login(UserView userview, UserRepository ur, SecurityService securityService){
         UserModel userModel = new UserModel(userview.getUsername(), userview.getPassword(), userview.getTelefono());
         Optional<UserDB> optionalUserDB = ur.findByUsername(userModel.getUsername());
         if(optionalUserDB.isPresent()) {
@@ -64,7 +60,7 @@ public class UserService {
         }
     }
 
-    public boolean logout(String auth){
+    public boolean logout(String auth, CookieRepository cr){
         Optional<CookieDB> optCookie = cr.findByCookie(auth);
         if(optCookie.isPresent()){
             UserDB userDB = optCookie.get().getUser();
@@ -74,7 +70,7 @@ public class UserService {
         }else return false;
     }
 
-    public CookieDB isLogged(String auth){
+    public CookieDB isLogged(String auth, CookieRepository cr){
         Optional<CookieDB> optCookie = cr.findByCookie(auth);
         return optCookie.orElse(null);
     }

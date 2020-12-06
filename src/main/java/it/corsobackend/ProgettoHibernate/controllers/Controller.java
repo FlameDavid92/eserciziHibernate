@@ -1,6 +1,7 @@
 package it.corsobackend.ProgettoHibernate.controllers;
 
 import it.corsobackend.ProgettoHibernate.entities.CookieDB;
+import it.corsobackend.ProgettoHibernate.repositories.CookieRepository;
 import it.corsobackend.ProgettoHibernate.repositories.ProdottoRepository;
 import it.corsobackend.ProgettoHibernate.repositories.VenditaRepository;
 import it.corsobackend.ProgettoHibernate.services.ProdottiVenditeService;
@@ -15,13 +16,14 @@ import java.math.BigDecimal;
 public class Controller {
     @Autowired private ProdottoRepository pr;
     @Autowired private VenditaRepository vr;
+    @Autowired private CookieRepository cr;
 
     @GetMapping("/venditedaid/{id}")
     public String getVenditeFromId(@CookieValue(value = "auth", defaultValue = "") String auth,
                                    @PathVariable("id") Long id,
                                    @Autowired ProdottiVenditeService pvs,
                                    @Autowired UserService us){
-        CookieDB cookieDB = us.isLogged(auth);
+        CookieDB cookieDB = us.isLogged(auth, cr);
         if(cookieDB == null) return "Accesso protetto, effettua il login!";
         return pvs.getVenditeProdottoDaId(id, pr);
     }
@@ -30,7 +32,7 @@ public class Controller {
                                      @PathVariable("nome") String nome,
                                      @Autowired ProdottiVenditeService pvs,
                                      @Autowired UserService us){
-        CookieDB cookieDB = us.isLogged(auth);
+        CookieDB cookieDB = us.isLogged(auth, cr);
         if(cookieDB == null) return "Accesso protetto, effettua il login!";
         return pvs.getVenditeProdottoDaNome(nome, pr);
     }
@@ -41,7 +43,7 @@ public class Controller {
                                   @PathVariable("quantita") Integer quantita,
                                   @Autowired ProdottiVenditeService pvs,
                                   @Autowired UserService us){
-        CookieDB cookieDB = us.isLogged(auth);
+        CookieDB cookieDB = us.isLogged(auth, cr);
         if(cookieDB == null) return "Accesso protetto, effettua il login!";
         return pvs.addVendita(idProdotto,quantita, pr, vr);
     }
@@ -52,7 +54,7 @@ public class Controller {
                                    @PathVariable("prezzo") BigDecimal prezzo,
                                    @Autowired ProdottiVenditeService pvs,
                                    @Autowired UserService us){
-        CookieDB cookieDB = us.isLogged(auth);
+        CookieDB cookieDB = us.isLogged(auth, cr);
         if(cookieDB == null) return "Accesso protetto, effettua il login!";
         return pvs.addProdotto(nome, prezzo, pr);
     }
