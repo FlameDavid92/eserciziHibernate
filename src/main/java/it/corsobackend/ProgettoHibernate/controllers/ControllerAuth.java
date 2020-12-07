@@ -19,6 +19,12 @@ public class ControllerAuth {
     @Autowired private UserRepository ur;
     @Autowired private CookieRepository cr;
 
+    @RequestMapping("/")
+    @ResponseBody
+    String home() {
+        return "Hello World!";
+    }
+
     @PostMapping("/registrazione")
     ResponseEntity<String> registrazione (@RequestBody UserView userview,
                                           @Autowired UserService us,
